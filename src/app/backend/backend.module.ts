@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // Partials
 import { HeaderComponent } from './partials/header/header.component';
@@ -15,14 +17,14 @@ import { SignUpComponent } from './layouts/sign-up/sign-up.component';
 
 // Specific
 import { ProductListComponent } from './products/product-list/product-list.component';
-import { ProductItemComponent } from './products/product-list/product-item/product-item.component';
+import { ProductItemComponent } from './products/product-item/product-item.component';
 import { BrandListComponent } from './brands/brand-list/brand-list.component';
-import { NgxPaginationModule } from 'ngx-pagination';
+import { TimeagoModule } from 'ngx-timeago';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'products',
+    redirectTo: 'brand',
     pathMatch: 'full',
   },
   {
@@ -38,11 +40,11 @@ const routes: Routes = [
     component: HomeComponent,
     children: [
       {
-        path: 'products',
+        path: 'product',
         component: ProductListComponent,
       },
       {
-        path: 'brands',
+        path: 'brand',
         component: BrandListComponent,
       },
     ],
@@ -66,7 +68,14 @@ const routes: Routes = [
     ProductItemComponent,
     BrandListComponent,
   ],
-  imports: [CommonModule, RouterModule.forChild(routes), NgxPaginationModule],
+  imports: [
+    CommonModule,
+    NgbModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+    TimeagoModule.forChild(),
+  ],
   exports: [RouterModule],
 })
 export class BackendModule {}

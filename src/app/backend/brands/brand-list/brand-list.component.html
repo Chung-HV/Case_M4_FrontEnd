@@ -5,8 +5,8 @@
         <div class="row align-items-center">
           <div class="col-lg-3 col-xl-2">
             <a
-              href="ecommerce-add-new-products.html"
               class="btn btn-primary mb-3 mb-lg-0"
+              (click)="triggerModal(editModalData, undefined, 'create')"
               ><i class="bx bxs-plus-square"></i>New Brand</a
             >
           </div>
@@ -16,9 +16,11 @@
                 <div class="col-12">
                   <div class="position-relative">
                     <input
-                      type="text"
                       class="form-control ps-5"
-                      placeholder="Search Product..."
+                      [(ngModel)]="searchText"
+                      (ngModelChange)="onChangeSearch()"
+                      type="text"
+                      placeholder="Search by name ..."
                     />
                     <span
                       class="
@@ -29,105 +31,6 @@
                       "
                       ><i class="bx bx-search"></i
                     ></span>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div
-                    class="btn-group"
-                    role="group"
-                    aria-label="Button group with nested dropdown"
-                  >
-                    <button type="button" class="btn btn-white">Sort By</button>
-                    <div class="btn-group" role="group">
-                      <button
-                        id="btnGroupDrop1"
-                        type="button"
-                        class="
-                          btn btn-white
-                          dropdown-toggle dropdown-toggle-nocaret
-                          px-1
-                        "
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        <i class="bx bx-chevron-down"></i>
-                      </button>
-                      <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                        <li>
-                          <a class="dropdown-item" href="#">Dropdown link</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item" href="#">Dropdown link</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div
-                    class="btn-group"
-                    role="group"
-                    aria-label="Button group with nested dropdown"
-                  >
-                    <button type="button" class="btn btn-white">
-                      Collection Type
-                    </button>
-                    <div class="btn-group" role="group">
-                      <button
-                        id="btnGroupDrop1"
-                        type="button"
-                        class="
-                          btn btn-white
-                          dropdown-toggle dropdown-toggle-nocaret
-                          px-1
-                        "
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        <i class="bx bxs-category"></i>
-                      </button>
-                      <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                        <li>
-                          <a class="dropdown-item" href="#">Dropdown link</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item" href="#">Dropdown link</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-white">
-                      Price Range
-                    </button>
-                    <div class="btn-group" role="group">
-                      <button
-                        id="btnGroupDrop1"
-                        type="button"
-                        class="
-                          btn btn-white
-                          dropdown-toggle dropdown-toggle-nocaret
-                          px-1
-                        "
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        <i class="bx bx-slider"></i>
-                      </button>
-                      <ul
-                        class="dropdown-menu dropdown-menu-start"
-                        aria-labelledby="btnGroupDrop1"
-                      >
-                        <li>
-                          <a class="dropdown-item" href="#">Dropdown link</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item" href="#">Dropdown link</a>
-                        </li>
-                      </ul>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -142,47 +45,160 @@
 <div class="card">
   <div class="card-body">
     <table class="table mb-0 table-hover text-center align-middle">
-      <thead>
+      <thead class="table-secondary">
         <tr>
-          <th scope="col" style="width: 10%">ID</th>
-          <th scope="col" style="width: 20%">Name</th>
-          <th scope="col" style="width: 25%">Image</th>
+          <th scope="col" style="width: 5%">ID</th>
+          <th scope="col" style="width: 20%" sortable="name">Name</th>
+          <th scope="col" style="width: 20%">Image</th>
           <th scope="col" style="width: 20%">Description</th>
-          <th scope="col" style="width: 25%">Action</th>
+          <th scope="col" style="width: 10%">Updated at</th>
+          <th scope="col" style="width: 20%">Action</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody *ngIf="!isLoading; else loading">
         <tr
           *ngFor="
-            let brand of brands
-              | paginate
-                : {
-                    itemsPerPage: tableSize,
-                    currentPage: page,
-                    totalItems: count
-                  }
+            let brand of filteredBrands
+              | slice: (page - 1) * pageSize:(page - 1) * pageSize + pageSize
           "
         >
-          <th scope="row">{{ brand.id }}</th>
-          <td>{{ brand.name }}</td>
-          <td>{{ brand.image }}</td>
-          <td>{{ brand.description }}</td>
-          <td>
-            <a class="btn btn-sm btn-primary me-1 justify-content-center"
+          <th class="align-middle" scope="row">{{ brand.id }}</th>
+          <td class="align-middle">{{ brand.name }}</td>
+          <td class="align-middle">{{ brand.image }}</td>
+          <td class="align-middle">{{ brand.description }}</td>
+          <td class="align-middle">
+            {{ brand.updated_at | timeago }}
+          </td>
+          <td class="align-middle">
+            <a
+              class="btn btn-sm btn-success me-1"
+              (click)="triggerModal(editModalData, brand, 'update')"
               >Edit</a
             >
-            <a class="btn btn-sm btn-danger">Delete</a>
+            <a
+              class="btn btn-sm btn-danger"
+              (click)="triggerModal(deleteModalData, brand, 'delete')"
+              >Delete</a
+            >
           </td>
         </tr>
       </tbody>
+      <ng-template #loading>
+        <tbody class="mt-5">
+          <tr>
+            <td class="align-middle fs-1" colspan="6">Loading ...</td>
+          </tr>
+        </tbody></ng-template
+      >
     </table>
 
-    <pagination-controls
-      [responsive]="true"
-      previousLabel="Prev"
-      nextLabel="Next"
-      (pageChange)="onTableDataChange($event)"
-    >
-    </pagination-controls>
+    <br />
+
+    <div class="d-flex justify-content-center">
+      <ngb-pagination
+        [(page)]="page"
+        [collectionSize]="collectionSize"
+        [pageSize]="pageSize"
+      ></ngb-pagination>
+    </div>
   </div>
 </div>
+
+<!-- Edit Modal -->
+<ng-template #editModalData let-modal>
+  <div class="modal-header">
+    <h4 id="modal-basic-title" class="modal-title">Create New Brand</h4>
+  </div>
+  <div class="modal-body">
+    <form class="row g-3" [formGroup]="brandForm">
+      <div class="col-md-12">
+        <label class="form-label" for="name">Name</label>
+        <input
+          id="name"
+          class="form-control"
+          type="text"
+          formControlName="name"
+          [class.is-invalid]="
+            this.brandForm.get('name')?.invalid &&
+            (this.brandForm.get('name')?.dirty ||
+              this.brandForm.get('name')?.touched)
+          "
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="this.brandForm.get('name')?.hasError('required')"
+        >
+          Required
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="description">Description</label>
+        <textarea
+          id="description"
+          class="form-control"
+          formControlName="description"
+          rows="3"
+          [class.is-invalid]="
+            this.brandForm.get('description')?.invalid &&
+            (this.brandForm.get('description')?.dirty ||
+              this.brandForm.get('description')?.touched)
+          "
+        ></textarea>
+        <div
+          class="invalid-feedback"
+          *ngIf="this.brandForm.get('description')?.hasError('required')"
+        >
+          Required
+        </div>
+      </div>
+      <!-- <div class="col-12">
+        <div class="input-group mb-3">
+          <input type="file" class="form-control" id="inputGroupFile01">
+        </div>
+      </div> -->
+      <div class="col-12 text-center">
+        <button
+          class="btn btn-success me-5"
+          [disabled]="!brandForm.valid"
+          (click)="modal.close('Submit click')"
+          type="button"
+        >
+          Submit
+        </button>
+        <button
+          class="btn btn-danger"
+          (click)="modal.dismiss('Close click')"
+          type="button"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteModalData let-modal>
+  <div class="modal-header">
+    <h4 id="modal-basic-title" class="modal-title">Delete</h4>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure?</p>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-success"
+      (click)="modal.close('Delete click')"
+      type="button"
+    >
+      Submit
+    </button>
+    <button
+      class="btn btn-danger"
+      (click)="modal.dismiss('Close click')"
+      type="button"
+    >
+      Cancel
+    </button>
+  </div>
+</ng-template>

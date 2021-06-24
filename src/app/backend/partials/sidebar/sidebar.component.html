@@ -74,14 +74,20 @@
       </ul>
     </li>
     <li class="menu-label">Product Management</li>
-    <li routerLinkActive="mm-active">
+    <li
+      routerLinkActive="mm-active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
       <a href="javascript:;" class="has-arrow">
         <div class="parent-icon"><i class="bx bx-cart"></i></div>
         <div class="menu-title">Product</div>
       </a>
       <ul>
-        <li routerLinkActive="mm-active">
-          <a routerLink="/backend/products"
+        <li
+          routerLinkActive="mm-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <a routerLink="/backend/product"
             ><i class="bx bx-right-arrow-alt"></i>Product List</a
           >
         </li>
@@ -93,22 +99,10 @@
       </ul>
     </li>
     <li routerLinkActive="mm-active">
-      <a href="javascript:;" class="has-arrow">
+      <a routerLink="/backend/brand">
         <div class="parent-icon"><i class="bx bx-cart"></i></div>
         <div class="menu-title">Brand</div>
       </a>
-      <ul>
-        <li routerLinkActive="mm-active">
-          <a routerLink="/backend/brands"
-            ><i class="bx bx-right-arrow-alt"></i>Brand List</a
-          >
-        </li>
-        <li>
-          <a href="ecommerce-add-new-products.html"
-            ><i class="bx bx-right-arrow-alt"></i>Add New Brand</a
-          >
-        </li>
-      </ul>
     </li>
   </ul>
   <!--end navigation-->
